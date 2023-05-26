@@ -81,13 +81,25 @@ if __name__ == '__main__':
             # App name
             with tcol2:
                 st.title('Validator Voting Comparison')
-
                 
+
         # Validator select box
         with st.container():
             divider(1)
-            options = st.multiselect(label='Select validators', options=validators, default=None, format_func=lambda x: x['name'])
+            
+            scol1, scol2 = st.columns([9,3])
+            
+            with scol1:
+                validator_selection = st.multiselect(label='Select validators', options=validators, default=None, format_func=lambda x: x['name'])
 
+            with scol2:
+                proposals_filter_options = [
+                    {'id':'AT_LEAST_1_VOTED', 'label':'At least 1 has voted (among selected)'}, 
+                    {'id':'ALL_VOTED',        'label':'All selected validators have voted'},
+                    {'id':'ALL_PROPOSALS',    'label':'All governance proposals'},
+                ]
+                proposals_filter_selection = st.selectbox(label='Filter proposals', options=proposals_filter_options, format_func=lambda x: x['label'])
+            
             
         # Voting history table
         with st.container():
@@ -95,14 +107,24 @@ if __name__ == '__main__':
                 with st.container():
                     st.subheader('Voting History')
 
-                    if len(options) >= 1:
+                    if len(validator_selection) >= 1:
                         
-                        # Checkbox input
-                        show_all_proposals = st.checkbox('Show all proposals', value=False, help='Shows all proposals regardless of participation from selected validators.')
-
                         # Table prep
-                        voting_history_df = compile_voting_history(votes_df, options)
-                        formatted_voting_history_df = format_voting_history(voting_history_df, proposals_df, options, show_all_proposals)
+                        voting_history_df = compile_voting_history(votes_df, proposals_df, validator_selection)
+                        filtered_voting_history_df = voting_history_df.copy()
+                        
+                        # Filter proposals
+                        if proposals_filter_selection['id'] == 'ALL_PROPOSALS':
+                            pass
+                            
+                        elif proposals_filter_selection['id'] == 'AT_LEAST_1_VOTED':
+                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) > 0]
+                            
+                        elif proposals_filter_selection['id'] == 'ALL_VOTED':
+                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) == 1]
+                            
+                        
+                        formatted_voting_history_df = format_voting_history(filtered_voting_history_df, validator_selection)
                         
                         # Table output
                         st.dataframe(data=formatted_voting_history_df.style.applymap(highlight_vote), height=600, use_container_width=True)
@@ -117,33 +139,27 @@ if __name__ == '__main__':
                 with st.container():
                     st.subheader('Voting Similarity')
 
-                    if len(options) >= 2:
+                    if len(validator_selection) >= 2:
                         vscol1, vscol2 = st.columns([2,10])
 
                         with vscol1:
-
-                            # Checkbox input
-                            overlap_only = st.checkbox('Overlap only', value=False, help='Calculates similarity across just the proposals where all selected validators voted on.')
+                            
                             divider(1)
 
                             # Change help texts depending on selected settings
-                            if overlap_only:
+                            if proposals_filter_selection['id']=='ALL_PROPOSALS':
+                                help_text__num_proposals = 'The total number of governance proposals created to date.'
+                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals created to date.'
+                            elif proposals_filter_selection['id']=='AT_LEAST_1_VOTED':
+                                help_text__num_proposals = 'The total number of governance proposals where at least one of the selected validators has voted on.'
+                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where at least one of the selected validators has voted on.'
+                            elif proposals_filter_selection['id']=='ALL_VOTED':
                                 help_text__num_proposals = 'The total number of governance proposals where all selected validators have voted on.'
-                                help_text__exact_same_votes = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where all have voted on.'
-                            else:
-                                help_text__num_proposals = 'The total number of governance proposals where at least 1 of the selected validators have voted on.'
-                                help_text__exact_same_votes = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where at least 1 voted.'
+                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where all selected validators have voted on.'
 
 
                             # Scorecards
-                            selected_names = [v['name'] for v in options]
-                            if overlap_only:
-                                # Retain only the proposals where all selected validators have voted
-                                filtered_voting_history_df = voting_history_df.loc[(voting_history_df.loc[:,selected_names].isnull()).mean(axis=1) == 0]
-                            else:
-                                # Retain all proposals where at least 1 validator has voted
-                                filtered_voting_history_df = voting_history_df.loc[(voting_history_df.loc[:,selected_names].isnull()).mean(axis=1) < 1]
-
+                            selected_names = [v['name'] for v in validator_selection]
                             num_proposals = filtered_voting_history_df.shape[0]
                             st.metric(label='Proposals', value=num_proposals, help=help_text__num_proposals)
                             divider(1)
@@ -157,18 +173,18 @@ if __name__ == '__main__':
                             else:
                                 intersection = exact_same_votes / num_proposals
                                 
-                            st.metric(label='Intersection', value='{:.1%}'.format(intersection), help=help_text__exact_same_votes)
+                            st.metric(label='Intersection', value='{:.1%}'.format(intersection), help=help_text__intersection)
 
 
                         with vscol2:
                             with st.container():
-                                similarity_df = create_similarity_matrix(options, filtered_voting_history_df)
+                                similarity_df = create_similarity_matrix(validator_selection, filtered_voting_history_df)
                                 fig = px.imshow(similarity_df, text_auto=True,
                                                 color_continuous_scale=px.colors.sequential.Greens,
                                                 range_color=(0,100))
                                 fig.update_layout(xaxis=dict(side='bottom', title=None),
                                                   yaxis=dict(side='left', title=None, showgrid=False),
-                                                  height=min(800, 300+100*len(options)),
+                                                  height=min(800, 300+100*len(validator_selection)),
                                                   paper_bgcolor='rgba(0,0,0,0)',
                                                   plot_bgcolor='rgba(0,0,0,0)',
                                                   margin=dict(t=60,b=20,l=20,r=20)

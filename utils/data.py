@@ -76,7 +76,8 @@ def fetch_datasets() -> dict:
             'votes_df':complete_votes_df}
 
 
-def compile_voting_history(votes_df: pd.DataFrame, options: list) -> pd.DataFrame:
+def compile_voting_history(votes_df: pd.DataFrame, proposals_df: pd.DataFrame, 
+                           validator_selection: list) -> pd.DataFrame:
     """Prepares a table of votes per governance proposal for all selected validators.
     
     Parameters
@@ -84,7 +85,10 @@ def compile_voting_history(votes_df: pd.DataFrame, options: list) -> pd.DataFram
     votes_df : pd.DataFrame
         A table of votes per validator per proposal.
     
-    options : list of dict
+    proposals_df : pd.DataFrame
+        A table of governance proposals (IDs and titles).
+    
+    validator_selection : list of dict
         The list of validators selected in-app for comparison.
     
     Returns
@@ -96,13 +100,13 @@ def compile_voting_history(votes_df: pd.DataFrame, options: list) -> pd.DataFram
     """
     
     # Names of selected validators
-    selected_names = [x['name'] for x in options]
+    selected_names = [x['name'] for x in validator_selection]
     
     # Validators that don't have any voting data yet
     missing_names = [n for n in selected_names if n not in votes_df['validator_name'].drop_duplicates().tolist()]
     
     # Filter voting data of selected validators only
-    filtered_votes_df = votes_df.merge(pd.DataFrame(options), how='inner', left_on='validator_address', right_on='address')
+    filtered_votes_df = votes_df.merge(pd.DataFrame(validator_selection), how='inner', left_on='validator_address', right_on='address')
     
     # Create side-by-side DataFrame
     voting_history_df = filtered_votes_df.pivot(index='proposal_id', columns='validator_name', values='vote')
@@ -111,11 +115,15 @@ def compile_voting_history(votes_df: pd.DataFrame, options: list) -> pd.DataFram
     # Create "blank" columns for validators without voting data
     for mn in missing_names: voting_history_df[mn] = np.nan
     
+    # Merge proposal titles
+    voting_history_df = voting_history_df.merge(proposals_df, how='right', left_index=True, right_on='id')
+    voting_history_df = voting_history_df.fillna(np.nan)
+    voting_history_df = voting_history_df.set_index(['id','title'])
+    
     return voting_history_df
 
 
-def format_voting_history(voting_history_df: pd.DataFrame, proposals_df: pd.DataFrame, 
-                          options: list, show_all_proposals: bool = False) -> pd.DataFrame:
+def format_voting_history(voting_history_df: pd.DataFrame, validator_selection: list) -> pd.DataFrame:
     """Prepares a formatted DataFrame of validator voting history for display as an html table.
     
     Parameters
@@ -124,15 +132,8 @@ def format_voting_history(voting_history_df: pd.DataFrame, proposals_df: pd.Data
         A side-by-side table of votes for all selected validators across a set of
         governance proposals.
     
-    proposals_df : pd.DataFrame
-        A table of governance proposals (IDs and titles).
-    
-    options : list of dict
+    validator_selection : list of dict
         The list of validators selected in-app for comparison.
-    
-    show_all_proposals: bool, default False
-        True if all proposals, including those without votes from the selected
-        validators, should be displayed in the output table.
     
     Returns
     -------
@@ -142,10 +143,9 @@ def format_voting_history(voting_history_df: pd.DataFrame, proposals_df: pd.Data
 
     formatted_df = voting_history_df.copy()
     
-    # Merge proposal titles
-    formatted_df = formatted_df.merge(proposals_df, how='inner', left_index=True, right_on='id')
-    
     # Format index and headers
+    formatted_df = formatted_df.reset_index()
+    formatted_df['title'] = 'Prop #' + formatted_df['id'].astype('str') + ' - ' + formatted_df['title'].fillna('')
     formatted_df['id'] = formatted_df['id'].astype('str').str.rjust(5)
     formatted_df = formatted_df.rename(columns={'id':'ID', 'title':'Proposal'})
     formatted_df = formatted_df.set_index(['ID','Proposal'])
@@ -154,28 +154,24 @@ def format_voting_history(voting_history_df: pd.DataFrame, proposals_df: pd.Data
     formatted_df = formatted_df.sort_index(ascending=False)
     
     # Order columns by selection order
-    selected_names = [x['name'] for x in options]
+    selected_names = [x['name'] for x in validator_selection]
     formatted_df = formatted_df[[v for v in selected_names if v in formatted_df.columns.tolist()]]
     
     # Truncate long validator names
     formatted_df.columns = [v.ljust(18) if len(v)<=18 else v[:15]+'...' for v in formatted_df.columns]
     
-    # If toggled, hide proposals where none of the selected validators have voted on
-    if show_all_proposals == False:
-        formatted_df = formatted_df.loc[formatted_df.isnull().mean(axis=1) < 1.0]
-        
     # Format blank cells
     formatted_df = formatted_df.fillna('-')
 
     return formatted_df
 
 
-def create_similarity_matrix(options: list, voting_history_df: pd.DataFrame) -> pd.DataFrame:
+def create_similarity_matrix(validator_selection: list, voting_history_df: pd.DataFrame) -> pd.DataFrame:
     """Calculates a voting similarity matrix for all pairs of validators among those selected.
     
     Parameters
     ----------
-    options : list of dict
+    validator_selection : list of dict
         The list of validators selected in-app for comparison.
     
     voting_history_df : pd.DataFrame
@@ -191,7 +187,7 @@ def create_similarity_matrix(options: list, voting_history_df: pd.DataFrame) -> 
     
     
     # List down all validator pairs
-    selected_names = [x['name'] for x in options]
+    selected_names = [x['name'] for x in validator_selection]
     pairs = list(permutations(selected_names, 2))
     similarity_scores = []
 
