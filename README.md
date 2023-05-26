@@ -66,5 +66,6 @@ Project Organization
 ├── requirements.txt   <- The requirements file for reproducing the python environment
 │
 ├── sql                <- Data extraction SQL statements (for reference only)
+├── static             <- Static assets and files, e.g. CSS, txt, etc.
 └── utils              <- Data extraction and processing functions
 ```
