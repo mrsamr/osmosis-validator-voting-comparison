@@ -14,6 +14,7 @@ WORKDIR /osmosis-validator-voting-comparison
 COPY app.py app.py
 COPY utils utils
 COPY static static
+COPY tests tests
 COPY .streamlit .streamlit
 
 CMD ["streamlit", "run", "app.py"]
