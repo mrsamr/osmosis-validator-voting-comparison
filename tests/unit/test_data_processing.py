@@ -1,9 +1,9 @@
 import pytest
 import pandas as pd
-from utils.data import prepare_complete_votes_df
-from utils.data import compile_voting_history
-from utils.data import format_voting_history
-from utils.data import create_similarity_matrix
+from src.utils.data import prepare_complete_votes_df
+from src.utils.data import compile_voting_history
+from src.utils.data import format_voting_history
+from src.utils.data import create_similarity_matrix
 
 
 @pytest.fixture

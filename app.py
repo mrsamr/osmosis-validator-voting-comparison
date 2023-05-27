@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from utils.data import get_validators, get_proposals, get_validator_votes
-from utils.data import prepare_complete_votes_df, compile_voting_history, format_voting_history, create_similarity_matrix
+from src.utils.data import get_validators, get_proposals, get_validator_votes
+from src.utils.data import prepare_complete_votes_df, compile_voting_history, format_voting_history, create_similarity_matrix
 
 
 def divider(n=1):
