@@ -19,3 +19,9 @@ jobs:
 
     - name: Build Docker image
       run: docker build . --file Dockerfile --tag osmo-validator-voting
+
+    - name: Run app
+      run: docker run -p 8051:8051 osmo-validator-voting
+
+    - name: Test app if running
+      run: pytest tests/integration/test_app.py
