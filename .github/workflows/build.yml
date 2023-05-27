@@ -13,12 +13,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    pre-steps:
-    - name: Download wait-for script
-      run: |
-        curl -o wait-for https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-        chmod +x wait-for
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -28,6 +22,11 @@ jobs:
 
     - name: Run app
       run: docker run -d -p 8501:8501 --name containerized-app osmo-validator-voting
+
+    - name: Download wait-for script
+      run: |
+        curl -o wait-for https://raw.githubusercontent.com/vishnubob/wait-f$
+        chmod +x wait-for
 
     - name: Wait for app to start
       run: wait-for localhost:8501 -t 60
