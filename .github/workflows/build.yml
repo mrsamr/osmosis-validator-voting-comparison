@@ -20,12 +20,5 @@ jobs:
     - name: Build Docker image
       run: docker build . --file Dockerfile --tag osmo-validator-voting
 
-    - name: Run app
-      run: docker run -d -p 8501:8501 --name containerized-app osmo-validator-voting
-
-    - name: Wait for app to start
-      run: sleep 60
-
-    - name: Test if app is running
-      run: docker exec -it containerized-app pytest tests/integration/test_app.py
-
+    - name: Run app then confirm if running
+      run: docker run --name containerized-app --publish 8501:8501 osmo-validator-voting streamlit run app.py &; sleep 10; pytest tests/integration/test_app.py
