@@ -2,6 +2,7 @@ Osmosis: Validator Voting Comparison
 ===================================
 
 [![Build](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml)
+[![Integration Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml)
 
 
 A simple app that enables a user to compare multiple Osmosis validators based on their voting history.
