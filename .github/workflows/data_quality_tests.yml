@@ -1,0 +1,22 @@
+name: Data Quality Tests
+
+on:
+  schedule:
+    - cron: '0 22 * * *' # Runs every day at 6 AM (UTC+8)
+  workflow_dispatch:
+
+jobs:
+
+  data-quality-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: docker build . --file Dockerfile --tag osmo-validator-voting
+
+    - name: Run data quality tests
+      run: docker run osmo-validator-voting sh -c "pytest tests/data"
