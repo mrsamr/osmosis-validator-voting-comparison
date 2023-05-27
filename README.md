@@ -1,6 +1,9 @@
 Osmosis: Validator Voting Comparison
 ===================================
 
+[![Build](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml)
+
+
 A simple app that enables a user to compare multiple Osmosis validators based on their voting history.
 
 ---
@@ -49,12 +52,23 @@ Run the following command.
 streamlit run app.py
 ```
 
-#### Deployment on Streamlit Cloud
+#### Running the app via Docker
+
+Build the image.
+```
+docker build --tag osmo-validator-voting .
+```
+
+Create container and run the app.
+```
+docker run -p 8051:8051 osmo-validator-voting
+```
+
+#### Deploying on Streamlit Cloud
 
 Follow the official instructions in the Streamlit [docs](https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app).
 
 ---
-
 
 Project Organization
 --------------------
