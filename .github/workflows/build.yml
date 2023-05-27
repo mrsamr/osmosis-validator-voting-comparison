@@ -23,13 +23,8 @@ jobs:
     - name: Run app
       run: docker run -d -p 8501:8501 --name containerized-app osmo-validator-voting
 
-    - name: Download wait-for script
-      run: |
-        curl -o wait-for https://raw.githubusercontent.com/vishnubob/wait-f$
-        chmod +x wait-for
-
     - name: Wait for app to start
-      run: wait-for localhost:8501 -t 60
+      run: sleep 60
 
     - name: Test if app is running
       run: docker exec -it containerized-app pytest tests/integration/test_app.py
