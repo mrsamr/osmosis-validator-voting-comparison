@@ -1,4 +1,4 @@
-name: Integration Tests
+name: Unit Tests
 
 on:
   push:
@@ -21,4 +21,4 @@ jobs:
       run: docker build . --file Dockerfile --tag osmo-validator-voting
 
     - name: Run tests
-      run: docker run osmo-validator-voting sh -c "pytest tests/integration"
+      run: docker run osmo-validator-voting sh -c "pytest tests/unit"

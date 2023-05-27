@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from utils.data import fetch_datasets
-from utils.data import compile_voting_history, format_voting_history, create_similarity_matrix
+from utils.data import get_validators, get_proposals, get_validator_votes
+from utils.data import prepare_complete_votes_df, compile_voting_history, format_voting_history, create_similarity_matrix
 
 
 def divider(n=1):
@@ -52,17 +52,28 @@ if __name__ == '__main__':
     st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 
-    # Define data caching function
+    # Define data caching functions
     @st.cache_data
-    def load_data():
-        return fetch_datasets()
-
+    def load_validators():
+        return get_validators()
+    
+    @st.cache_data
+    def load_proposals():
+        return pd.DataFrame(get_proposals())
+    
+    @st.cache_data
+    def load_votes(validators, proposals):
+        votes = get_validator_votes()
+        complete_votes = prepare_complete_votes_df(validators, proposals, votes)
+        return complete_votes
+    
 
     # Fetch datasets
-    datasets = load_data()
-    validators = datasets.get('validators')
-    proposals_df = datasets.get('proposals_df')
-    votes_df = datasets.get('votes_df')
+    validators = load_validators()
+    proposals = load_proposals()
+    votes_df = load_votes(validators, proposals)
+    
+    proposals_df = pd.DataFrame(proposals)
 
 
     # Add left and right margins

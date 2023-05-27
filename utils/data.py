@@ -43,7 +43,7 @@ def get_validator_votes() -> list:
     return votes
 
 
-def prepare_complete_votes_df(validators, proposals, votes) -> pd.DataFrame:
+def prepare_complete_votes_df(validators: list, proposals: list, votes: list) -> pd.DataFrame:
     """Merges and formats raw datasets."""
     
     validators_df = pd.DataFrame(validators)
@@ -59,21 +59,6 @@ def prepare_complete_votes_df(validators, proposals, votes) -> pd.DataFrame:
                                            'proposal_id','proposal_title','vote']]
     
     return complete_votes_df
-
-
-def fetch_datasets() -> dict:
-    """Returns a set of DataFrames to be used in the Streamlit app."""
-    
-    validators = get_validators()
-    proposals = get_proposals()
-    votes = get_validator_votes()
-    
-    proposals_df = pd.DataFrame(proposals)
-    complete_votes_df = prepare_complete_votes_df(validators, proposals, votes)
-    
-    return {'validators':validators,
-            'proposals_df':proposals_df,
-            'votes_df':complete_votes_df}
 
 
 def compile_voting_history(votes_df: pd.DataFrame, proposals_df: pd.DataFrame, 

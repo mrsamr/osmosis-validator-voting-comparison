@@ -1,7 +1,7 @@
 """Checks if data extraction functions are able to extract data."""
 
 import pytest
-from utils.data import get_validators, get_proposals, get_validator_votes, fetch_datasets
+from utils.data import get_validators, get_proposals, get_validator_votes
 
 
 @pytest.fixture
@@ -15,10 +15,6 @@ def proposals():
 @pytest.fixture
 def votes():
     return get_validator_votes()
-
-@pytest.fixture
-def datasets():
-    return fetch_datasets()
 
 
 # Validators
