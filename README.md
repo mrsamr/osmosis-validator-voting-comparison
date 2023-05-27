@@ -42,6 +42,28 @@ conda activate streamlit;
 pip install -r requirements.txt;
 ```
 
+#### Testing
+
+Run unit tests:
+
+```sh
+pytest tests/unit
+```
+
+Run integration tests:
+
+```sh
+pytest tests/integration
+```
+
+Run data quality checks:
+
+```sh
+pytest tests/data
+```
+
+
+
 ---
 
 Usage and Deployment
@@ -84,5 +106,6 @@ Project Organization
 │
 ├── sql                <- Data extraction SQL statements (for reference only)
 ├── static             <- Static assets and files, e.g. CSS, txt, etc.
+├── tests              <- Test scripts
 └── utils              <- Data extraction and processing functions
 ```
