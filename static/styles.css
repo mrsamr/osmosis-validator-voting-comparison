@@ -22,14 +22,6 @@ div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div > div:nth-child(4) > div > di
     background:#28274F;
 } 
 
-/* Add section background color */
-div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div > div:nth-child(5) > div > div:nth-child(1) > div {
-    border:10px;
-    padding:30px;
-    border-radius:10px;
-    background:#28274F;
-} 
-
 /* Add matrix chart background color */
 div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div {
     border:10px;
