@@ -13,15 +13,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    pre-steps:
+    - name: Download wait-for script
+      run: |
+        curl -o wait-for https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+        chmod +x wait-for
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Build Docker image
       run: docker build . --file Dockerfile --tag osmo-validator-voting
-
-    - name: Install wait-for
-      run: sudo apt-get install -y wait-for-it
 
     - name: Run app
       run: docker run -d -p 8501:8501 --name containerized-app osmo-validator-voting
