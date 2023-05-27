@@ -21,7 +21,7 @@ jobs:
       run: docker build . --file Dockerfile --tag osmo-validator-voting
 
     - name: Run app
-      run: docker run -d -p 8501:8501 osmo-validator-voting
+      run: docker run -d -p 8501:8501 --name containerized-app osmo-validator-voting
 
-    - name: Test app if running
-      run: pytest tests/integration/test_app.py
+    - name: Test running app
+      run: docker exec -it containerized-app pytest tests/integration/test_app.py
