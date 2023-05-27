@@ -16,10 +16,6 @@ def proposals():
 def votes():
     return get_validator_votes()
 
-@pytest.fixture
-def datasets():
-    return fetch_datasets()
-
 
 # Validators
 def test__get_validators__is_list(validators):
