@@ -101,121 +101,129 @@ if __name__ == '__main__':
                 proposals_filter_selection = st.selectbox(label='Filter proposals', options=proposals_filter_options, format_func=lambda x: x['label'])
             
             
-        # Voting history table
+        # Voting history table (nested st.container for CSS selection)
         with st.container():
             with st.container():
                 with st.container():
-                    st.subheader('Voting History')
-
-                    if len(validator_selection) >= 1:
-                        
-                        # Table prep
-                        voting_history_df = compile_voting_history(votes_df, proposals_df, validator_selection)
-                        filtered_voting_history_df = voting_history_df.copy()
-                        
-                        # Filter proposals
-                        if proposals_filter_selection['id'] == 'ALL_PROPOSALS':
-                            pass
-                            
-                        elif proposals_filter_selection['id'] == 'AT_LEAST_1_VOTED':
-                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) > 0]
-                            
-                        elif proposals_filter_selection['id'] == 'ALL_VOTED':
-                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) == 1]
-                            
-                        
-                        formatted_voting_history_df = format_voting_history(filtered_voting_history_df, validator_selection)
-                        
-                        # Table output
-                        st.dataframe(data=formatted_voting_history_df.style.applymap(highlight_vote), height=600, use_container_width=True)
-                    
-                    else:
-                        st.markdown('Please select validators first.')
-
-
-        # Voting similarity matrix
-        with st.container():
-            with st.container():
-                with st.container():
-                    st.subheader('Voting Similarity')
-
-                    if len(validator_selection) >= 2:
-                        vscol1, vscol2 = st.columns([2,10])
-
-                        with vscol1:
-                            
-                            divider(1)
-
-                            # Change help texts depending on selected settings
-                            if proposals_filter_selection['id']=='ALL_PROPOSALS':
-                                help_text__num_proposals = 'The total number of governance proposals created to date.'
-                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals created to date.'
-                            elif proposals_filter_selection['id']=='AT_LEAST_1_VOTED':
-                                help_text__num_proposals = 'The total number of governance proposals where at least one of the selected validators has voted on.'
-                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where at least one of the selected validators has voted on.'
-                            elif proposals_filter_selection['id']=='ALL_VOTED':
-                                help_text__num_proposals = 'The total number of governance proposals where all selected validators have voted on.'
-                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where all selected validators have voted on.'
-
-
-                            # Scorecards
-                            selected_names = [v['name'] for v in validator_selection]
-                            num_proposals = filtered_voting_history_df.shape[0]
-                            st.metric(label='Proposals', value=num_proposals, help=help_text__num_proposals)
-                            divider(1)
-
-                            exact_same_votes = (filtered_voting_history_df.loc[:,selected_names].eq(filtered_voting_history_df.loc[:,selected_names[0]], axis=0).mean(axis=1)==1).sum()
-                            st.metric(label='Exact Same Votes', value=exact_same_votes, help='The number of proposals where all selected validators voted exactly the same.')
-                            divider(1)
-
-                            if num_proposals == 0:
-                                intersection = 0
-                            else:
-                                intersection = exact_same_votes / num_proposals
-                                
-                            st.metric(label='Intersection', value='{:.1%}'.format(intersection), help=help_text__intersection)
-
-
-                        with vscol2:
+                    with st.container():
+                        with st.container():
                             with st.container():
-                                similarity_df = create_similarity_matrix(validator_selection, filtered_voting_history_df)
-                                fig = px.imshow(similarity_df, text_auto=True,
-                                                color_continuous_scale=px.colors.sequential.Greens,
-                                                range_color=(0,100))
-                                fig.update_layout(xaxis=dict(side='bottom', title=None),
-                                                  yaxis=dict(side='left', title=None, showgrid=False),
-                                                  height=min(800, 300+100*len(validator_selection)),
-                                                  paper_bgcolor='rgba(0,0,0,0)',
-                                                  plot_bgcolor='rgba(0,0,0,0)',
-                                                  margin=dict(t=60,b=20,l=20,r=20)
-                                                 )
-                                st.plotly_chart(fig, use_container_width=True)
+                                with st.container():
+                                    st.subheader('Voting History')
 
-                    else:
-                        st.markdown('Please select multiple validators.')
+                                    if len(validator_selection) >= 1:
+
+                                        # Table prep
+                                        voting_history_df = compile_voting_history(votes_df, proposals_df, validator_selection)
+                                        filtered_voting_history_df = voting_history_df.copy()
+
+                                        # Filter proposals
+                                        if proposals_filter_selection['id'] == 'ALL_PROPOSALS':
+                                            pass
+
+                                        elif proposals_filter_selection['id'] == 'AT_LEAST_1_VOTED':
+                                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) > 0]
+
+                                        elif proposals_filter_selection['id'] == 'ALL_VOTED':
+                                            filtered_voting_history_df = filtered_voting_history_df.loc[filtered_voting_history_df.notnull().mean(axis=1) == 1]
 
 
-        # App info and usage notes
+                                        formatted_voting_history_df = format_voting_history(filtered_voting_history_df, validator_selection)
+
+                                        # Table output
+                                        st.dataframe(data=formatted_voting_history_df.style.applymap(highlight_vote), height=600, use_container_width=True)
+
+                                    else:
+                                        st.markdown('Please select validators first.')
+
+
+        # Voting similarity matrix (nested st.container for CSS selection)
         with st.container():
-            
-            divider(2)
-            
-            fcol1, fcol2, fcol3 = st.columns(3)
-            
-            with fcol1:
-                with st.expander('About the app'):
-                    st.markdown(about_md)
+            with st.container():
+                with st.container():
+                    with st.container():
+                        with st.container():
+                            with st.container():
+                                with st.container():
+                                    st.subheader('Voting Similarity')
 
-            with fcol2:
-                with st.expander('Usage Guide'):
-                    st.markdown(guide_md)
+                                    if len(validator_selection) >= 2:
+                                        vscol1, vscol2 = st.columns([2,10])
 
-            with fcol3:
-                with st.expander('Methodology'):
-                    st.markdown(methodology_md)
+                                        with vscol1:
+
+                                            divider(1)
+
+                                            # Change help texts depending on selected settings
+                                            if proposals_filter_selection['id']=='ALL_PROPOSALS':
+                                                help_text__num_proposals = 'The total number of governance proposals created to date.'
+                                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals created to date.'
+                                            elif proposals_filter_selection['id']=='AT_LEAST_1_VOTED':
+                                                help_text__num_proposals = 'The total number of governance proposals where at least one of the selected validators has voted on.'
+                                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where at least one of the selected validators has voted on.'
+                                            elif proposals_filter_selection['id']=='ALL_VOTED':
+                                                help_text__num_proposals = 'The total number of governance proposals where all selected validators have voted on.'
+                                                help_text__intersection = 'The percentage of proposals where all selected validators voted exactly the same out of all proposals where all selected validators have voted on.'
 
 
-        # Footer: quick links
-        with st.container():
-            divider(1)
-            st.markdown(footer_html, unsafe_allow_html=True)
+                                            # Scorecards
+                                            selected_names = [v['name'] for v in validator_selection]
+                                            num_proposals = filtered_voting_history_df.shape[0]
+                                            st.metric(label='Proposals', value=num_proposals, help=help_text__num_proposals)
+                                            divider(1)
+
+                                            exact_same_votes = (filtered_voting_history_df.loc[:,selected_names].eq(filtered_voting_history_df.loc[:,selected_names[0]], axis=0).mean(axis=1)==1).sum()
+                                            st.metric(label='Exact Same Votes', value=exact_same_votes, help='The number of proposals where all selected validators voted exactly the same.')
+                                            divider(1)
+
+                                            if num_proposals == 0:
+                                                intersection = 0
+                                            else:
+                                                intersection = exact_same_votes / num_proposals
+
+                                            st.metric(label='Intersection', value='{:.1%}'.format(intersection), help=help_text__intersection)
+
+
+                                        with vscol2:
+                                            with st.container():
+                                                similarity_df = create_similarity_matrix(validator_selection, filtered_voting_history_df)
+                                                fig = px.imshow(similarity_df, text_auto=True,
+                                                                color_continuous_scale=px.colors.sequential.Greens,
+                                                                range_color=(0,100))
+                                                fig.update_layout(xaxis=dict(side='bottom', title=None),
+                                                                  yaxis=dict(side='left', title=None, showgrid=False),
+                                                                  height=min(800, 300+80*len(validator_selection)),
+                                                                  paper_bgcolor='rgba(0,0,0,0)',
+                                                                  plot_bgcolor='rgba(0,0,0,0)',
+                                                                  margin=dict(t=60,b=20,l=20,r=20)
+                                                                 )
+                                                st.plotly_chart(fig, use_container_width=True)
+
+                                    else:
+                                        st.markdown('Please select multiple validators.')
+
+
+                        # App info and usage notes
+                        with st.container():
+
+                            divider(2)
+
+                            fcol1, fcol2, fcol3 = st.columns(3)
+
+                            with fcol1:
+                                with st.expander('About the app'):
+                                    st.markdown(about_md)
+
+                            with fcol2:
+                                with st.expander('Usage Guide'):
+                                    st.markdown(guide_md)
+
+                            with fcol3:
+                                with st.expander('Methodology'):
+                                    st.markdown(methodology_md)
+
+
+                        # Footer: quick links
+                        with st.container():
+                            divider(1)
+                            st.markdown(footer_html, unsafe_allow_html=True)
