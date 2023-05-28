@@ -7,7 +7,7 @@ from google.cloud import storage
 from pandas import to_datetime
 
 
-def upload_file_to_gcs(file, bucket_name, object_key, service_account_info):
+def upload_file_to_gcs(file, bucket_name, object_key, service_account_key):
     """Uploads a file to Google Cloud Storage.
 
     Parameters
@@ -21,8 +21,8 @@ def upload_file_to_gcs(file, bucket_name, object_key, service_account_info):
     object_key : str
         The name to give the uploaded file in the bucket.
         
-    service_account_info :dict
-        The service account JSON key file contents as a dictionary.
+    service_account_key :dict
+        The service account JSON key file.
         
     Returns
     -------
@@ -34,7 +34,7 @@ def upload_file_to_gcs(file, bucket_name, object_key, service_account_info):
         object_key = file.split('/')[-1]
     
     # Instantiate a storage client using the service account info dictionary
-    storage_client = storage.Client.from_service_account_info(service_account_info)
+    storage_client = storage.Client.from_service_account_json(service_account_key)
 
     # Get the bucket
     bucket = storage_client.get_bucket(bucket_name)
