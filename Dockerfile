@@ -12,9 +12,12 @@ WORKDIR /osmosis-validator-voting-comparison
 
 # Copy source code files
 COPY app.py app.py
-COPY utils utils
+COPY src src
 COPY static static
 COPY tests tests
 COPY .streamlit .streamlit
+
+# Create data directory
+RUN mkdir data
 
 CMD ["streamlit", "run", "app.py"]
