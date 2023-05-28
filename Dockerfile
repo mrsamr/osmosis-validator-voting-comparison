@@ -19,5 +19,6 @@ COPY .streamlit .streamlit
 
 # Create data directory
 RUN mkdir data
+RUN mkdir credentials
 
 CMD ["streamlit", "run", "app.py"]
