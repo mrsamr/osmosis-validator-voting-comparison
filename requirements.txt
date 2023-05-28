@@ -2,3 +2,4 @@ pandas
 plotly
 streamlit
 pytest
+google-cloud-storage
