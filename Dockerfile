@@ -17,4 +17,7 @@ COPY static static
 COPY tests tests
 COPY .streamlit .streamlit
 
+# Create data directory
+RUN mkdir data
+
 CMD ["streamlit", "run", "app.py"]

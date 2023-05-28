@@ -3,7 +3,7 @@
 
 import json
 import gzip
-import argparse
+import os
 from src.utils.flipside import get_validators_from_api, get_proposals_from_api, get_validator_votes_from_api
 from src.utils.google_cloud_storage import upload_file_to_gcs
 
@@ -51,17 +51,13 @@ def refresh_datasets(bucket_name, service_account_info):
 
 if __name__ == '__main__':
     
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(prog='refresh_datasets')
-    parser.add_argument('--bucket-name', action='store', required=False, default=4, help='The name of the Google Cloud Storage bucket')
-    parser.add_argument('--service-account-info', action='store', required=False, default=4, help='The content of the Google service account json file')
-    args = parser.parse_args()
-    
+    # Load secrets from environment variables
+    gcs_bucket = os.environ['GCS_BUCKET']
+    service_account_json = os.environ['GOOGLE_SERVICE_ACCOUNT_JSON']
 
     # Parse service account json string
-    service_account_info = json.loads(args.service_account_info)
-
+    service_account_info = json.loads(service_account_json)
     
     # Run ETL job
-    refresh_datasets(bucket_name=args.bucket_name,
+    refresh_datasets(bucket_name=gcs_bucket,
                      service_account_info=service_account_info)
