@@ -39,12 +39,12 @@ def refresh_datasets(bucket_name, service_account_key):
 
     upload_file_to_gcs(file=PROPOSALS_FILENAME,
                        bucket_name=bucket_name,
-                       object_key=VALIDATORS_FILENAME,
+                       object_key=PROPOSALS_FILENAME,
                        service_account_key=service_account_key)
 
     upload_file_to_gcs(file=VOTES_FILENAME,
                        bucket_name=bucket_name,
-                       object_key=VALIDATORS_FILENAME,
+                       object_key=VOTES_FILENAME,
                        service_account_key=service_account_key)
     
 
