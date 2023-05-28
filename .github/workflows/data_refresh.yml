@@ -21,9 +21,9 @@ jobs:
     - name: Run ETL job
       env:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
-        GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}
+        GOOGLE_SERVICE_ACCOUNT_JSON: '${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}'
       run: |
         docker run \
           -e GCS_BUCKET=$GCS_BUCKET \
           -e GOOGLE_SERVICE_ACCOUNT_JSON=$GOOGLE_SERVICE_ACCOUNT_JSON \
-          osmo-validator-voting sh -c "python -m src.etl.refresh_datasets"
+          osmo-validator-voting python -m src.etl.refresh_datasets
