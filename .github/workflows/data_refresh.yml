@@ -17,13 +17,18 @@ jobs:
 
     - name: Build Docker image
       run: docker build . --file Dockerfile --tag osmo-validator-voting
-      
+
+    - name: Create service account key file
+      env:
+        GOOGLE_SERVICE_ACCOUNT_JSON: '${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}'
+      run: |
+        mkdir credentials 
+        printf '%s ' $GOOGLE_SERVICE_ACCOUNT_JSON >| credentials/service_account_key.json;
+ 
     - name: Run ETL job
       env:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
-        GOOGLE_SERVICE_ACCOUNT_JSON: '${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}'
       run: |
-        printf '%s ' $GOOGLE_SERVICE_ACCOUNT_JSON >| credentials/service_account_key.json;
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \
