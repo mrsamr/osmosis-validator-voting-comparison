@@ -1,6 +1,12 @@
 """Data extraction functions from Flipside Crypto"""
 
 import requests
+import os
+import pandas as pd
+from flipside import Flipside
+
+
+FLIPSIDE_API_KEY = os.environ.get('FLIPSIDE_API_KEY')
 
 
 def get_validators_from_api() -> list:
@@ -36,3 +42,33 @@ def get_validator_votes_from_api() -> list:
               'proposal_id':int(pid),
               'vote':vote} for val in votes for pid,vote in val.get('VOTES').items()]
     return votes
+
+
+def query(stmt: str, api_key: str = FLIPSIDE_API_KEY, return_df: bool = True) -> list:
+    """Executes a query on Flipside and retrieves the result.
+    
+    Parameters
+    ----------
+    stmt : str
+        The SQL statement.
+        
+    Returns
+    -------
+    result : list or pd.DataFrame
+        A list of records (or DataFrame) of the query results.
+    
+    """
+    
+    assert api_key is not None, 'Please provide an API key.'
+    
+    # Initialize Flipside client
+    flipside = Flipside(api_key, 'https://api-v2.flipsidecrypto.xyz')
+    
+    # Run the query against Flipside's query engine and await the results
+    query_result_set = flipside.query(stmt)
+    result = query_result_set.records
+    
+    if return_df:
+        result = pd.DataFrame(result).set_index('__row_index')
+    
+    return result
