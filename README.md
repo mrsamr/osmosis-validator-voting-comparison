@@ -5,6 +5,7 @@ Osmosis: Validator Voting Comparison
 [![Unit Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/unit_tests.yml)
 [![Integration Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml)
 [![Data Quality Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_tests.yml)
+[![Data Refresh](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/scheduled_data_refresh.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/scheduled_data_refresh.yml)
 
 
 A simple app that enables a user to compare multiple Osmosis validators based on their voting history.
@@ -104,8 +105,11 @@ Project Organization
 ├── README.md          <- The top-level README for developers using this project
 ├── requirements.txt   <- The requirements file for reproducing the python environment
 │
-├── sql                <- Data extraction SQL statements (for reference only)
+├── src                <- Contains source code files
+│   ├── etl            <- Data pipeline code
+│   ├── sql            <- Data extraction SQL statements
+│   └── utils          <- Data extraction and processing functions
+│
 ├── static             <- Static assets and files, e.g. CSS, txt, etc.
-├── tests              <- Test scripts
-└── utils              <- Data extraction and processing functions
+└── tests              <- Test scripts
 ```

@@ -2,20 +2,38 @@
 
 
 import requests
+import gzip
+import json
+import os
 import pandas as pd
 import numpy as np
 from itertools import permutations
+from dotenv import load_dotenv
+
+
+load_dotenv('.env')
+
+GCS_BUCKET = os.environ.get('GCS_BUCKET')
+
+
+def read_gzip_json_from_api(url):
+    """Reads from a gzip-compressed json from an API"""
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    with gzip.GzipFile(fileobj=response.raw) as uncompressed_file:
+        json_data = uncompressed_file.read()
+
+    data = json.loads(json_data)
+
+    return data
 
 
 def get_validators() -> list:
     """Fetches a complete list of validators."""
     
-    URL = 'https://api.flipsidecrypto.com/api/v2/queries/cdf4d7a8-bb09-4e0b-ba70-1bd663b2e0ae/data/latest'
-    r = requests.get(URL)
-    validators = [{'address':val.get('VALIDATOR_ADDRESS'),
-                   'name':val.get('VALIDATOR_NAME'),
-                   'voting_power':val.get('VOTING_POWER')}
-                  for val in r.json()]
+    URL = f'https://storage.googleapis.com/{GCS_BUCKET}/data/validators.json.gz'
+    validators = read_gzip_json_from_api(URL)
     
     return validators
 
@@ -23,23 +41,23 @@ def get_validators() -> list:
 def get_proposals() -> dict:
     """Fetches complete list of governance proposals."""
     
-    URL = 'https://api.flipsidecrypto.com/api/v2/queries/eab92e49-bb27-460b-9c3f-74f9cd9db34f/data/latest'
-    r = requests.get(URL)
-    proposals = [{'id':val.get('PROPOSAL_ID'),
-                  'title':val.get('PROPOSAL_TITLE')}
-                  for val in r.json()]
+    URL = f'https://storage.googleapis.com/{GCS_BUCKET}/data/proposals.json.gz'
+    proposals = read_gzip_json_from_api(URL)
+    proposals = [{'id':val.get('id'),
+                  'title':val.get('title')}
+                  for val in proposals]
     return proposals
 
 
 def get_validator_votes() -> list:
     """Extracts complete list of votes for all validators."""
     
-    URL = 'https://api.flipsidecrypto.com/api/v2/queries/c956f149-348a-4939-8ff8-500924da7e6e/data/latest'
-    r = requests.get(URL)
-    votes = r.json()
-    votes = [{'validator_address':val.get('VALIDATOR_ADDRESS'),
+    URL = f'https://storage.googleapis.com/{GCS_BUCKET}/data/votes.json.gz'
+    votes = read_gzip_json_from_api(URL)
+    votes = [{'validator_address':val.get('validator_address'),
               'proposal_id':int(pid),
-              'vote':vote} for val in votes for pid,vote in val.get('VOTES').items()]
+              'vote':vote} for val in votes for pid,vote in val.get('votes').items()]
+    
     return votes
 
 

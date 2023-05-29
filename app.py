@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
+from dotenv import load_dotenv
 
 from src.utils.data import get_validators, get_proposals, get_validator_votes
 from src.utils.data import prepare_complete_votes_df, compile_voting_history, format_voting_history, create_similarity_matrix
+
+load_dotenv('.env')
 
 
 def divider(n=1):

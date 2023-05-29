@@ -4,9 +4,12 @@
 import json
 import gzip
 import os
+from dotenv import load_dotenv
 from src.utils.atomscan import get_validators
 from src.utils.flipside_crypto import query
 from src.utils.google_cloud_storage import upload_file_to_gcs
+
+load_dotenv('.env')
 
 
 def save_dict_to_gzip_json(dictionary, filename):
