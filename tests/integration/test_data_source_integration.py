@@ -40,6 +40,9 @@ def test__get_validators__string_addresses(validators):
 def test__get_validators__string_names(validators):
     invalid_list = [v for v in validators if type(v['name']) != str]
     assert len(invalid_list) == 0
+
+def test__get_validators__is_sorted_by_desc_voting_power(validators):
+    assert sorted([v['voting_power'] for v in validators], reverse=True) == [v['voting_power'] for v in validators]
     
     
 # Proposals
@@ -55,7 +58,7 @@ def test__get_proposals__is_list_of_dicts(proposals):
     
 def test__get_proposals__field_names(proposals):
     FIELD_NAMES = ('id','title')
-    invalid_list = [p for p in proposals if not set(FIELD_NAMES).issubset(set(p.keys()))]
+    invalid_list = [p for p in proposals if not set(FIELD_NAMES) == set(p.keys())]
     assert len(invalid_list) == 0, f'Invalid metadata found for {len(invalid_list)} validators, e.g. {invalid_list[0]}. Expected fields: {FIELD_NAMES}'
 
 def test__get_proposals__positive_integer_ids(proposals):
