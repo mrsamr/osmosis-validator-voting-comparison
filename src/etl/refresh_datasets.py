@@ -4,7 +4,7 @@
 import json
 import gzip
 import os
-from src.utils.flipside import get_validators_from_api, get_proposals_from_api, get_validator_votes_from_api
+from src.utils.flipside_crypto import get_validators_from_api, get_proposals_from_api, get_validator_votes_from_api
 from src.utils.google_cloud_storage import upload_file_to_gcs
 
 
