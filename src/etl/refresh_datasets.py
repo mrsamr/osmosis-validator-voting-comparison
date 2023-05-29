@@ -4,7 +4,8 @@
 import json
 import gzip
 import os
-from src.utils.flipside_crypto import get_validators_from_api, get_proposals_from_api, get_validator_votes_from_api
+from src.utils.atomscan import get_validators
+from src.utils.flipside_crypto import get_proposals_from_api, get_validator_votes_from_api
 from src.utils.google_cloud_storage import upload_file_to_gcs
 
 
@@ -20,7 +21,7 @@ def refresh_datasets(bucket_name, service_account_key):
     VOTES_FILENAME = 'data/votes.json.gz'
     
     # Extract datasets from source
-    validators = get_validators_from_api()
+    validators = get_validators()
     proposals = get_proposals_from_api()
     votes = get_validator_votes_from_api()
 
