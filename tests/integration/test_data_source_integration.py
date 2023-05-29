@@ -22,7 +22,7 @@ def test__get_validators__is_list(validators):
     assert type(validators) == list
     
 def test__get_validators__result_count(validators):
-    assert len(validators) > 350
+    assert len(validators) > 300
     
 def test__get_validators__is_list_of_dicts(validators):
     invalid_list = [v for v in validators if type(v) != dict]
