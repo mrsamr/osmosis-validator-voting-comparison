@@ -5,7 +5,7 @@ import json
 import gzip
 import os
 from src.utils.atomscan import get_validators
-from src.utils.flipside_crypto import get_proposals_from_api, get_validator_votes_from_api
+from src.utils.flipside_crypto import query
 from src.utils.google_cloud_storage import upload_file_to_gcs
 
 
@@ -13,18 +13,32 @@ def save_dict_to_gzip_json(dictionary, filename):
     with gzip.open(filename, 'wt') as file:
         json.dump(dictionary, file)
         
+        
+def read_sql_statement(file_path):
+    with open(file_path, 'r') as file:
+        sql_statement = file.read()
+    return sql_statement
+        
 
 def refresh_datasets(bucket_name, service_account_key):
+    
+    SQL_FILE_PROPOSALS = 'src/sql/proposals.sql'
+    SQL_FILE_VOTES = 'src/sql/votes.sql'
     
     VALIDATORS_FILENAME = 'data/validators.json.gz'
     PROPOSALS_FILENAME = 'data/proposals.json.gz'
     VOTES_FILENAME = 'data/votes.json.gz'
     
-    # Extract datasets from source
+    # Extract validators list from Atomscan
     validators = get_validators()
-    proposals = get_proposals_from_api()
-    votes = get_validator_votes_from_api()
-
+    
+    # Extract proposals list from Flipside
+    sql_stmt_proposals = read_sql_statement(SQL_FILE_PROPOSALS)
+    proposals = query(sql_stmt_proposals, return_df=False)
+    
+    # Extract votes dataset from Flipside
+    sql_stmt_votes = read_sql_statement(SQL_FILE_VOTES)
+    votes = query(sql_stmt_votes, return_df=False)
 
     # Save to local files
     save_dict_to_gzip_json(validators, VALIDATORS_FILENAME)

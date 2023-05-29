@@ -44,7 +44,7 @@ def get_validator_votes_from_api() -> list:
     return votes
 
 
-def query(stmt: str, api_key: str = FLIPSIDE_API_KEY) -> list:
+def query(stmt: str, api_key: str = FLIPSIDE_API_KEY, return_df: bool = True) -> list:
     """Executes a query on Flipside and retrieves the result.
     
     Parameters
@@ -54,8 +54,8 @@ def query(stmt: str, api_key: str = FLIPSIDE_API_KEY) -> list:
         
     Returns
     -------
-    result_df : list
-        A DataFrame of the the query results.
+    result : list or pd.DataFrame
+        A list of records (or DataFrame) of the query results.
     
     """
     
@@ -66,7 +66,9 @@ def query(stmt: str, api_key: str = FLIPSIDE_API_KEY) -> list:
     
     # Run the query against Flipside's query engine and await the results
     query_result_set = flipside.query(stmt)
+    result = query_result_set.records
     
-    result_df = pd.DataFrame(query_result_set.records).set_index('__row_index')
+    if return_df:
+        result = pd.DataFrame(result).set_index('__row_index')
     
-    return result_df
+    return result
