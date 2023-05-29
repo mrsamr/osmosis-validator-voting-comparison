@@ -4,3 +4,4 @@ streamlit
 pytest
 google-cloud-storage
 flipside
+python-dotenv>=0.5.1
