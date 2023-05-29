@@ -3,8 +3,10 @@
 import requests
 import os
 import pandas as pd
+from dotenv import load_dotenv
 from flipside import Flipside
 
+load_dotenv('.env')
 
 FLIPSIDE_API_KEY = os.environ.get('FLIPSIDE_API_KEY')
 
