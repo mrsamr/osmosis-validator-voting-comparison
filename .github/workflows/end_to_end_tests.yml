@@ -30,10 +30,8 @@ jobs:
     - name: Test run ETL job
       env:
         GCS_BUCKET: ${{ secrets.TEST_GCS_BUCKET }}
-        FLIPSIDE_API_KEY ${{ secrets.TEST_FLIPSIDE_API_KEY }}
       run: |
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \
-          -e FLIPSIDE_API_KEY=$FLIPSIDE_API_KEY \
           osmo-validator-voting python -m src.etl.refresh_datasets
