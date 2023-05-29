@@ -26,7 +26,7 @@ governance_proposals AS (
 
 
 SELECT proposal_id
-     , proposal_title
+     , (CASE proposal_id WHEN 362 THEN 'Osmosis Grants Program (OGP) Renewal'
+             ELSE proposal_title END) AS proposal_title
      , CURRENT_TIMESTAMP AS _extracted_at
 FROM governance_proposals
-ORDER BY proposal_id

@@ -4,7 +4,7 @@ validator_metadata AS (
     WITH
 
     missing_labels AS (
-        SELECT * FROM (VALUES ('osmovaloper1tv9wnreg9z5qlxyte8526n7p3tjasndede2kj9', 'Electric'), ('osmovaloper1vcpryrtatk6c8z6tcyx9w45jsw56rvkqapgq6p', 'Twinstake'), ('osmovaloper14n8pf9uxhuyxqnqryvjdr8g68na98wn5amq3e5', 'Prism Protocol | Delegate for airdrop'), ('osmovaloper1dvpxxkksf5hrhnycsgyyjnal79lp7gp3n59t0d', 'Chill Validation'), ('osmovaloper1r7spsjagrmcfv96w5dxtttajvnxczhcpgfk74g', 'PRO Delegators'), ('osmovaloper1gw6z2kn7z7cg747czxq98yczcmauk29uzqfuw4', 'Flipside'), ('osmovaloper10w06wvmdd4xn7hr76gzrv570f7q5uweem5jcd7', 'The_Cybernetics'), ('osmovaloper1xxarc6are7zrmwvmmxkezaycepa6ttyn2gnysv', '5.0 Validator'), ('osmovaloper1ff875h5plrnyumhm3cezn85dj4hzjzjqs972w3', 'Pickaxe.it'), ('osmovaloper1v63dkhqluvkk0fsugrjp63m79556qf32r4lfgw', 'Hugo test'), ('osmovaloper1jn2tc8y4tc36pwzfd2pk009lhe420w49ryvcjf', 'Supernova'), ('osmovaloper1w6xwce25z0l5y420xnlzkxljkyxm2c4cuych7e', 'Sr20de'), ('osmovaloper1zla6q7rhrtzqyyulw86ajq9qvectddjxclc3x9', 'test-validator'), ('osmovaloper1anyeq0uugchhd7s92z44nkkku4ws52f5avm074', 'DSFDF'), ('osmovaloper1awvxsfkd9365rumd2u8j806xlmlrrjhdaxfr5q', 'testvalidator'), ('osmovaloper13qrpp886n475z2jcs552w80fwnz8zp97ajg2q9', 'fsc-osmosis-1'), ('osmovaloper1x2h5ghvxmjsy4f5qfreq9fcrr672uje0y6zsdu', 'Node X')
+        SELECT * FROM (VALUES ('osmovaloper14lzvt4gdwh2q4ymyjqma0p4j4aykpn92l4warr', 'reynisfjara'), ('osmovaloper1tv9wnreg9z5qlxyte8526n7p3tjasndede2kj9', 'Electric'), ('osmovaloper1vcpryrtatk6c8z6tcyx9w45jsw56rvkqapgq6p', 'Twinstake'), ('osmovaloper14n8pf9uxhuyxqnqryvjdr8g68na98wn5amq3e5', 'Prism Protocol | Delegate for airdrop'), ('osmovaloper1dvpxxkksf5hrhnycsgyyjnal79lp7gp3n59t0d', 'Chill Validation'), ('osmovaloper1r7spsjagrmcfv96w5dxtttajvnxczhcpgfk74g', 'PRO Delegators'), ('osmovaloper1gw6z2kn7z7cg747czxq98yczcmauk29uzqfuw4', 'Flipside'), ('osmovaloper10w06wvmdd4xn7hr76gzrv570f7q5uweem5jcd7', 'The_Cybernetics'), ('osmovaloper1xxarc6are7zrmwvmmxkezaycepa6ttyn2gnysv', '5.0 Validator'), ('osmovaloper1ff875h5plrnyumhm3cezn85dj4hzjzjqs972w3', 'Pickaxe.it'), ('osmovaloper1v63dkhqluvkk0fsugrjp63m79556qf32r4lfgw', 'Hugo test'), ('osmovaloper1jn2tc8y4tc36pwzfd2pk009lhe420w49ryvcjf', 'Supernova'), ('osmovaloper1w6xwce25z0l5y420xnlzkxljkyxm2c4cuych7e', 'Sr20de'), ('osmovaloper1zla6q7rhrtzqyyulw86ajq9qvectddjxclc3x9', 'test-validator'), ('osmovaloper1anyeq0uugchhd7s92z44nkkku4ws52f5avm074', 'DSFDF'), ('osmovaloper1awvxsfkd9365rumd2u8j806xlmlrrjhdaxfr5q', 'testvalidator'), ('osmovaloper13qrpp886n475z2jcs552w80fwnz8zp97ajg2q9', 'fsc-osmosis-1'), ('osmovaloper1x2h5ghvxmjsy4f5qfreq9fcrr672uje0y6zsdu', 'Node X')
         ) AS labels(validator_address, validator_name)
     )
 
@@ -42,7 +42,7 @@ deduped_names AS (
          , validator_name
          , voting_power
          , count(*) OVER (partition by validator_name) = 1 AS is_unique_name
-         , (CASE WHEN is_unique_name THEN validator_name
+         , (CASE WHEN nullif(trim(validator_name), '') IS NOT NULL AND is_unique_name THEN validator_name
                  ELSE validator_name || ' (...' || right(validator_address, 6) || ')' END) AS unique_name
     FROM validator_metadata
 )
