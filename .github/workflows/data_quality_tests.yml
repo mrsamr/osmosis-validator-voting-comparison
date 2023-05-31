@@ -19,4 +19,9 @@ jobs:
       run: docker build . --file Dockerfile --tag osmo-validator-voting
 
     - name: Run tests
-      run: docker run osmo-validator-voting sh -c "pytest tests/data"
+      env:
+        GCS_BUCKET: ${{ secrets.TEST_GCS_BUCKET }}
+      run: |
+        docker run \
+          -e GCS_BUCKET=$GCS_BUCKET \
+          osmo-validator-voting sh -c "pytest tests/data"
