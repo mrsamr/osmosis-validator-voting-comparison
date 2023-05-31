@@ -10,10 +10,21 @@ Osmosis: Validator Voting Comparison
 
 A simple app that enables a user to compare multiple Osmosis validators based on their voting history.
 
+Check out the live app [here](https://osmosis-validator-voting-comparison-mrsamr.streamlit.app/). 
+
 ---
 
 Overview
 --------
+
+This project is a Streamlit app that displays information on the voting history of Osmosis validators. Data is sourced
+from Atomscan and Flipside Crypto. This project is comprised of two main parts:
+
+1. **Data pipeline.** A batch ETL job that extracts data from Atomscan and Flipside crypto. Data is formatted
+and then stored in a Google Cloud Storage bucket. This job is orchestrated via Github actions on a schedule, 
+e.g. every 12 hours. The purpose of this batch job is to cache the data for faster response times on the main web app.
+1. **Streamlit web app.** This is the front-end web app which enables users to explore the data. This is hosted
+on Streamlit cloud and can be accessed [here](https://osmosis-validator-voting-comparison-mrsamr.streamlit.app/).
 
 This project was built by [rmas](https://twitter.com/rmas_11) as an open-source contribution to [MetricsDAO](https://metricsdao.xyz) and to the community in general. Please reach out on Twitter if you have any questions or if you would like to collaborate.
 
@@ -43,6 +54,25 @@ conda activate streamlit;
 pip install -r requirements.txt;
 ```
 
+#### Data Initialization
+
+Before running the app, you need to cache the datasets first on a Google Cloud Storage bucket.
+
+1. Prepare your Google Cloud service account key and store it as:
+   - `credentials/service_account_key.json`
+
+1. Set the bucket name environment variable:
+   - `export GCS_BUCKET=<YOUR_BUCKET_NAME>`
+   
+1. Set the Flipside API key environment variable:
+   - `export FLIPSIDE_API_KEY=<YOUR_API_KEY>`
+
+1. Run the data pipeline:
+   - `python -m src.etl.refresh_datasets`
+    
+1. Start the app:
+   - `streamlit run app.py`
+
 #### Testing
 
 Run unit tests:
@@ -63,32 +93,54 @@ Run data quality checks:
 pytest tests/data
 ```
 
-
-
 ---
 
 Usage and Deployment
 --------------------
 
-#### Running the app locally
+#### Running locally
 
-Run the following command.
-
+Run the data pipeline.
 ```sh
+export GCS_BUCKET=<YOUR_BUCKET_NAME>;
+export FLIPSIDE_API_KEY=<YOUR_API_KEY>;
+python -m src.etl.refresh_datasets
+```
+
+Start the app.
+```sh
+export GCS_BUCKET=<YOUR_BUCKET_NAME>;
 streamlit run app.py
 ```
 
-#### Running the app via Docker
+Open the app at `http://localhost:8501`.
+
+
+#### Running via Docker
 
 Build the image.
 ```
 docker build --tag osmo-validator-voting .
 ```
 
-Create container and run the app.
+Run the data pipeline.
+```sh
+docker run \
+  -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials
+  -e GCS_BUCKET=<YOUR_BUCKET_NAME> \
+  -e FLIPSIDE_API_KEY=<YOUR_API_KEY> \
+  python -m src.etl.refresh_datasets
 ```
-docker run -p 8051:8051 osmo-validator-voting
+
+Start the app.
+```sh
+docker run \
+  -e GCS_BUCKET=<YOUR_BUCKET_NAME> \
+  -p 8501:8501 \
+  osmo-validator-voting
 ```
+
+Open the app at `http://localhost:8501`.
 
 #### Deploying on Streamlit Cloud
 
