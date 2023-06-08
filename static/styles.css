@@ -7,7 +7,7 @@
 
 
 /* Add section border & background color */
-div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div {
+div.css-16nc0hx > div:nth-child(1) > div > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(1) > div {
     border:10px;
     padding:30px;
     border-radius:10px;
@@ -16,7 +16,7 @@ div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div > div > div > div:nth-child(1
 
 
 /* Add matrix chart background color */
-div.css-16nc0hx.e1tzin5v1 > div:nth-child(1) > div {
+div.css-16nc0hx > div:nth-child(1) > div {
     border:10px;
     border-radius:10px;
     background:#140f34;
