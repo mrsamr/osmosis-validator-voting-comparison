@@ -5,6 +5,14 @@ on:
     branches:
       - main
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Build
+      - Unit Tests
+      - End-to-End Tests
+      - Integration Tests
+    types:
+      - completed
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -12,7 +20,7 @@ env:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && needs.Build.result == 'success' && needs.'Unit Tests'.result == 'success' && needs.'End-to-End Tests'.result == 'success' && needs.'Integration Tests'.result == 'success')
     runs-on: ubuntu-latest
 
     steps:
