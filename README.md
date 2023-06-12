@@ -48,8 +48,8 @@ cd osmosis-validator-voting-comparison
 Install python and packages.
 
 ```sh
-conda create -n streamlit python==3.8;
-conda activate streamlit;
+conda create -n osmovvc python==3.11;
+conda activate osmovvc;
 pip install -r requirements.txt;
 ```
 
