@@ -155,6 +155,7 @@ Project Organization
 ├── LICENSE            <- Contains the software license used by this project
 ├── README.md          <- The top-level README for developers using this project
 ├── requirements.txt   <- The requirements file for reproducing the python environment
+├── version.txt        <- Version tagging for docker images
 │
 ├── src                <- Contains source code files
 │   ├── etl            <- Data pipeline code
