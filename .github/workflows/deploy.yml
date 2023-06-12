@@ -9,7 +9,6 @@ on:
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
-  IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
 
 jobs:
   deploy:
@@ -25,7 +24,9 @@ jobs:
         run: echo "::set-output name=version::$(cat version.txt)"
 
       - name: Build Docker image
-        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }} .
+        env:
+          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
+        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
 
       - name: Log in to Docker Hub
         env:
