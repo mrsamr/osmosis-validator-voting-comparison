@@ -20,7 +20,9 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Read version from file
-      run: source version.env
+      run: |
+        source version.env
+        echo "IMAGE_VERSION=$IMAGE_VERSION"
 
     - name: Create service account key file
       env:
@@ -37,6 +39,7 @@ jobs:
 
     - name: Pull Docker image
       run: |
+        echo "IMAGE_VERSION=$IMAGE_VERSION"
         docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
 
     - name: Run ETL job
