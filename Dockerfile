@@ -1,13 +1,10 @@
-FROM python:3.8
+FROM python:3.11-slim
 
 # Install python packages
 COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Create a new directory named "myapp"
-RUN mkdir /osmosis-validator-voting-comparison
-
-# Set the working directory to the new directory
+# Set working directory
 WORKDIR /osmosis-validator-voting-comparison
 
 # Copy source code files
