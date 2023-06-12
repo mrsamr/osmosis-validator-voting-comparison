@@ -2,9 +2,8 @@ Osmosis: Validator Voting Comparison
 ===================================
 
 [![Build](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/build.yml)
-[![Unit Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/unit_tests.yml)
-[![Integration Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/integration_tests.yml)
-[![Data Quality Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_tests.yml)
+[![Tests](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/tests.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/tests.yml)
+[![Data Quality Checks](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_checks.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/data_quality_checks.yml)
 [![Data Refresh](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/scheduled_data_refresh.yml/badge.svg)](https://github.com/mrsamr/osmosis-validator-voting-comparison/actions/workflows/scheduled_data_refresh.yml)
 
 
