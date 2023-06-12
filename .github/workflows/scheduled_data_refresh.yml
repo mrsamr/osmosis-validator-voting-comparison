@@ -19,10 +19,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Read version from file
-      id: read_version
-      run: echo "::set-output name=version::$(cat version.txt)" 
-
     - name: Create service account key file
       env:
         GOOGLE_SERVICE_ACCOUNT_JSON: '${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}'
@@ -37,20 +33,21 @@ jobs:
         echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin 
 
     - name: Pull Docker image
-      env:
-        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
       run: |
-        docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+        source version.env
+        echo "IMAGE_VERSION=$IMAGE_VERSION"
+        docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
 
     - name: Run ETL job
       env:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
         FLIPSIDE_API_KEY: ${{ secrets.PROD_FLIPSIDE_API_KEY }}
-        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
       run: |
+        source version.env
+        echo "IMAGE_VERSION=$IMAGE_VERSION"
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \
           -e FLIPSIDE_API_KEY=$FLIPSIDE_API_KEY \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }} \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION \
           python -m src.etl.refresh_datasets

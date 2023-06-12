@@ -18,14 +18,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Read version from file
-        id: read_version
-        run: echo "::set-output name=version::$(cat version.txt)"
-
       - name: Build Docker image
-        env:
-          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
-        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
+        run: |
+          source version.env
+          echo "IMAGE_VERSION=$IMAGE_VERSION"
+          docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
 
       - name: Log in to Docker Hub
         env:
@@ -34,6 +31,7 @@ jobs:
           echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
       - name: Push Docker image
-        env:
-          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
-        run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+        run: |
+          source version.env
+          echo "IMAGE_VERSION=$IMAGE_VERSION"
+          docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
