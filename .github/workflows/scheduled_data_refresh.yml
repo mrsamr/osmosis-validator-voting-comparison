@@ -19,11 +19,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Read version from file
-      run: |
-        source version.env
-        echo "IMAGE_VERSION=$IMAGE_VERSION"
-
     - name: Create service account key file
       env:
         GOOGLE_SERVICE_ACCOUNT_JSON: '${{ secrets.PROD_GOOGLE_SERVICE_ACCOUNT_JSON }}'
@@ -39,6 +34,7 @@ jobs:
 
     - name: Pull Docker image
       run: |
+        source version.env
         echo "IMAGE_VERSION=$IMAGE_VERSION"
         docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
 
@@ -47,6 +43,8 @@ jobs:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
         FLIPSIDE_API_KEY: ${{ secrets.PROD_FLIPSIDE_API_KEY }}
       run: |
+        source version.env
+        echo "IMAGE_VERSION=$IMAGE_VERSION"
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \

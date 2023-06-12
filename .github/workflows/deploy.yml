@@ -18,11 +18,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Read version from file
-        run: source version.env
-
       - name: Build Docker image
-        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
+        run: |
+          source version.env
+          echo "IMAGE_VERSION=$IMAGE_VERSION"
+          docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
 
       - name: Log in to Docker Hub
         env:
@@ -31,4 +31,7 @@ jobs:
           echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
       - name: Push Docker image
-        run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
+        run: |
+          source version.env
+          echo "IMAGE_VERSION=$IMAGE_VERSION"
+          docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
