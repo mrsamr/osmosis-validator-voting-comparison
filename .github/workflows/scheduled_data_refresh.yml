@@ -20,8 +20,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Read version from file
-      id: read_version
-      run: echo "::set-output name=version::$(cat version.txt)" 
+      run: source version.env
 
     - name: Create service account key file
       env:
@@ -37,20 +36,17 @@ jobs:
         echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin 
 
     - name: Pull Docker image
-      env:
-        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
       run: |
-        docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+        docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION
 
     - name: Run ETL job
       env:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
         FLIPSIDE_API_KEY: ${{ secrets.PROD_FLIPSIDE_API_KEY }}
-        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
       run: |
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \
           -e FLIPSIDE_API_KEY=$FLIPSIDE_API_KEY \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }} \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION \
           python -m src.etl.refresh_datasets
