@@ -5,15 +5,22 @@ on:
     branches:
       - main
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Build
+      - Unit Tests
+      - End-to-End Tests
+      - Integration Tests
+    types:
+      - completed
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
-  IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && needs.Build.result == 'success' && needs.'Unit Tests'.result == 'success' && needs.'End-to-End Tests'.result == 'success' && needs.'Integration Tests'.result == 'success')
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +32,9 @@ jobs:
         run: echo "::set-output name=version::$(cat version.txt)"
 
       - name: Build Docker image
-        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }} .
+        env:
+          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
+        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:$IMAGE_VERSION .
 
       - name: Log in to Docker Hub
         env:
@@ -34,4 +43,6 @@ jobs:
           echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
       - name: Push Docker image
+        env:
+          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
         run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
