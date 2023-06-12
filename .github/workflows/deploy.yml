@@ -20,7 +20,7 @@ env:
 
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && needs.Build.result == 'success' && needs.'Unit Tests'.result == 'success' && needs.'End-to-End Tests'.result == 'success' && needs.'Integration Tests'.result == 'success')
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && needs['Build'].result == 'success' && needs['Unit Tests'].result == 'success' && needs['End-to-End Tests'].result == 'success' && needs['Integration Tests'].result == 'success')
     runs-on: ubuntu-latest
 
     steps:
