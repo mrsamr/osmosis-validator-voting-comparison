@@ -25,7 +25,6 @@ jobs:
 
 
   integration-tests:
-    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -44,8 +43,7 @@ jobs:
           osmo-validator-voting sh -c "pytest tests/integration"
 
 
-  e2e-data-refresh-test:
-    needs: unit-tests
+  e2e-data-refresh-test-run:
     runs-on: ubuntu-latest
 
     steps:
