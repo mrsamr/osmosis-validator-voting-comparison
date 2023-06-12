@@ -15,6 +15,7 @@ jobs:
   etl:
     runs-on: ubuntu-latest
 
+    steps:
     - name: Read version from file
       id: read_version
       run: echo "::set-output name=version::$(cat version.txt)" 
