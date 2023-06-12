@@ -35,4 +35,6 @@ jobs:
           echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
       - name: Push Docker image
+        env:
+          IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
         run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
