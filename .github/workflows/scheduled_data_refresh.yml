@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Read version from file
       id: read_version
       run: echo "::set-output name=version::$(cat version.txt)" 
