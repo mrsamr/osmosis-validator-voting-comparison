@@ -5,18 +5,23 @@ on:
     - cron: '0 */12 * * *' # Runs every 12 hours
   workflow_dispatch:
 
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+
+
 jobs:
-
-  build_and_run:
-
+  etl:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Build Docker image
-      run: docker build . --file Dockerfile --tag osmo-validator-voting
+    - name: Read version from file
+      id: read_version
+      run: echo "::set-output name=version::$(cat version.txt)" 
 
     - name: Create service account key file
       env:
@@ -24,14 +29,28 @@ jobs:
       run: |
         mkdir credentials 
         printf '%s ' $GOOGLE_SERVICE_ACCOUNT_JSON >| credentials/service_account_key.json;
- 
+
+    - name: Log in to Docker Hub
+      env:
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: |
+        echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin 
+
+    - name: Pull Docker image
+      env:
+        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
+      run: |
+        docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+
     - name: Run ETL job
       env:
         GCS_BUCKET: ${{ secrets.PROD_GCS_BUCKET }}
         FLIPSIDE_API_KEY: ${{ secrets.PROD_FLIPSIDE_API_KEY }}
+        IMAGE_VERSION: ${{ steps.read_version.outputs.version }}
       run: |
         docker run \
           -v $PWD/credentials:/osmosis-validator-voting-comparison/credentials \
           -e GCS_BUCKET=$GCS_BUCKET \
           -e FLIPSIDE_API_KEY=$FLIPSIDE_API_KEY \
-          osmo-validator-voting python -m src.etl.refresh_datasets
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_VERSION }} \
+          python -m src.etl.refresh_datasets
