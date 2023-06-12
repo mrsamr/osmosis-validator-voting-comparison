@@ -1,4 +1,4 @@
-name: Data Quality Tests
+name: Data Quality Checks
 
 on:
   schedule:
